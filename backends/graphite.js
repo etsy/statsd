@@ -39,6 +39,8 @@ var timerNamespace   = [];
 var gaugesNamespace  = [];
 var setsNamespace    = [];
 
+var timerRegEx;
+
 var graphiteStats = {};
 
 var post_stats = function graphite_post_stats(statString) {
@@ -113,6 +115,9 @@ var flush_stats = function graphite_flush(ts, metrics) {
     var namespace = timerNamespace.concat(key);
     var the_key = namespace.join(".");
     for (timer_data_key in timer_data[key]) {
+      if (!timerRegEx.test(timer_data_key)) {
+        continue;
+      }
       if (typeof(timer_data[key][timer_data_key]) === 'number') {
         statString += the_key + '.' + timer_data_key + ' ' + timer_data[key][timer_data_key] + ts_suffix;
       } else {
@@ -179,6 +184,7 @@ exports.init = function graphite_init(startup_time, config, events) {
   prefixGauge     = config.graphite.prefixGauge;
   prefixSet       = config.graphite.prefixSet;
   legacyNamespace = config.graphite.legacyNamespace;
+  timerRegEx      = config.graphite.timerRegEx;
 
   // set defaults for prefixes
   globalPrefix  = globalPrefix !== undefined ? globalPrefix : "stats";
@@ -188,6 +194,9 @@ exports.init = function graphite_init(startup_time, config, events) {
   prefixSet     = prefixSet !== undefined ? prefixSet : "sets";
   legacyNamespace = legacyNamespace !== undefined ? legacyNamespace : true;
 
+  // initialize regex
+  timerRegEx     = timerRegEx !== undefined ? timerRegEx : ".*";
+  timerRegEx     = new RegExp(timerRegEx);
 
   if (legacyNamespace === false) {
     if (globalPrefix !== "") {
