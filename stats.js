@@ -66,7 +66,8 @@ function flushMetrics() {
     counter_rates: counter_rates,
     timer_data: timer_data,
     pctThreshold: pctThreshold,
-    histogram: conf.histogram
+    histogram: conf.histogram,
+    ignoreTimerMetrics: conf.ignoreTimerMetrics
   };
 
   // After all listeners, reset the stats

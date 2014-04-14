@@ -11,6 +11,7 @@ module.exports = {
     var timer_counters = {};
     var sets = {};
     var pctThreshold = null;
+    var noTimerMetrics = null;
 
     this.metrics = {
       counters: counters,
@@ -18,7 +19,8 @@ module.exports = {
       timers: timers,
       timer_counters: timer_counters,
       sets: sets,
-      pctThreshold: pctThreshold
+      pctThreshold: pctThreshold,
+      noTimerMetrics: noTimerMetrics
     }
     callback();
   },

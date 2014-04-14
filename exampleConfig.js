@@ -99,6 +99,17 @@ Optional Variables:
                      [ { metric: 'foo', bins: [] },
                        { metric: '', bins: [ 50, 100, 150, 200, 'inf'] } ]
 
+  ignoreTimerMetrics: for timers, an array of mappings of strings (to match metrics) and
+                      which metric not to calculate. 
+                      default: []
+                      Possible values are: threshold (all thresholds), threshold_sum, threshold_mean, threshold_upper, 
+                        std, upper, lower, count, count_ps, sum, mean, median
+                      First match wins.  examples:
+                      * ignore "sum" and "std" for all metrics except foo
+                      [ { metric: 'foo', names: [] },
+                       { metric: '', names: [ "sum", "std" ] } ]
+                      
+
 */
 {
   graphitePort: 2003
