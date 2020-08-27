@@ -21,6 +21,8 @@ function logerror(err) {
 
 function UDPRepeaterBackend(startupTime, config, emitter) {
   var self = this;
+
+  this.ignore = [ 'statsd.packets_received', 'statsd.bad_lines_seen', 'statsd.metrics_received', 'statsd.timestamp_lag' ];
   this.config = config.repeater || [];
   this.sock = (config.repeaterProtocol == 'udp6') ?
         dgram.createSocket('udp6') :
@@ -35,6 +37,7 @@ function UDPRepeaterBackend(startupTime, config, emitter) {
 
   // attach
   emitter.on('packet', function(packet, rinfo) { self.process(packet, rinfo); });
+  emitter.on('flush', function(time_stamp, metrics) { self.flush(time_stamp, metrics); });
 }
 
 
@@ -42,7 +45,39 @@ UDPRepeaterBackend.prototype.process = function(packet, rinfo) {
   var self = this;
   var hosts = self.config;
   for(var i=0; i<hosts.length; i++) {
-    self.sock.send(packet,0,packet.length,hosts[i].port,hosts[i].host,logerror);
+    if(hosts[i].on != 'flush')
+      self.sock.send(packet,0,packet.length,hosts[i].port,hosts[i].host,logerror);
+  }
+};
+
+/*
+  Hosts configured with "on": "flush" will only have packets sent to them
+  on the configured flush interval. This can save network bandwidth.
+*/
+UDPRepeaterBackend.prototype.flush = function(time_stamp, metrics) {
+  var self = this;
+  var type, packet, stat;
+  hosts = self.config;
+
+  // Currently only counters and gauges are repeated via flush.
+  var statistics = {
+    counters : { data: metrics.counters, suffix: 'c' },
+    gauges   : { data: metrics.gauges,   suffix: 'g' }
+  };
+
+  for(var i=0; i<hosts.length; i++) {
+    if(hosts[i].on != 'flush') continue;
+
+    for(type in statistics) {
+      stat = statistics[type];
+      for(metric in stat.data) {
+        if(self.ignore.indexOf(metric) >= 0) continue;
+        if(stat.data[metric] == 0) continue;
+
+        packet = new Buffer(metric + ":" + stat.data[metric] + "|" + stat.suffix);
+        self.sock.send(packet,0,packet.length,hosts[i].port,hosts[i].host,logerror);
+      }
+    }
   }
 };
 
@@ -56,7 +91,7 @@ UDPRepeaterBackend.prototype.stop = function(cb) {
 var TCPRepeaterBackend = function(startupTime, config, emitter) {  
   this.config = config;
   this.pools = [];
-  
+
   var targets = this.config.repeater || [];
   for(var i = 0; i < targets.length; i++) {
     this.pools.push(this.createPool(targets[i]));

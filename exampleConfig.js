@@ -101,6 +101,9 @@ Optional Variables:
                     packets should be "repeated" (duplicated to).
                     e.g. [ { host: '10.10.10.10', port: 8125 },
                            { host: 'observer', port: 88125 } ]
+                    each packet will be repeated by default. In order to only
+                    repeat to a host on 'flush' events, configure a host as follows:
+                           { host: "1.2.3.4", port: 8125, on: "flush" }
 
   repeaterProtocol: whether to use udp4, udp6, or tcp for repeaters.
                     ["udp4," "udp6", or "tcp" default: "udp4"]
