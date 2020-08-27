@@ -1,2 +1,6 @@
 #!/usr/bin/env node
+if (process.argv.slice(2).length == 0) {
+  process.argv.push('config.js');
+}
+
 require('./../stats.js');
