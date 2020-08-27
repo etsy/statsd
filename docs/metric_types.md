@@ -94,8 +94,11 @@ So if `gaugor` was `333`, those commands would set it to `333 - 10 + 4`, or
 
 Note:
 
-This implies you can't explicitly set a gauge to a negative number
-without first setting it to zero.
+If you want to set a gauge to a negative number, please follow this format.
+
+	gaugor:(-10)|g
+	
+In this case StatsD will take the negative number as the new value. 
 
 ## Sets
 

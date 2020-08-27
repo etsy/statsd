@@ -3,3 +3,4 @@ node_modules
 # WebStorm / IntelliJ IDEA project files
 .idea
 *.iml
+.DS_Store

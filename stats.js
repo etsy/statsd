@@ -307,7 +307,8 @@ config.configFile(process.argv[2], function (config) {
             if (gauges[key] && fields[0].match(/^[-+]/)) {
               gauges[key] += Number(fields[0] || 0);
             } else {
-              gauges[key] = Number(fields[0] || 0);
+              var maybe_negative_value = fields[0] || 0;
+              gauges[key] = Number(maybe_negative_value.replace(/\(|\)/g,''));
             }
           } else if (metric_type === "s") {
             if (! sets[key]) {
