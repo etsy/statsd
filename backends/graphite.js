@@ -75,6 +75,10 @@ var post_stats = function graphite_post_stats(stats) {
         stats.add(namespace + '.graphiteStats.flush_length'   + globalSuffix, flush_length  , ts);
         var stats_payload = graphiteProtocol == 'pickle' ? stats.toPickle() : stats.toText();
 
+        // Apply the globalPrefix in legacyNamespace mode.
+        if(legacyNamespace && globalPrefix.length > 0)
+           statString = globalPrefix + "." + statString.slice(0, -1).replace(/\n/g, "\n" + globalPrefix + ".") + "\n";
+
         var starttime = Date.now();
         this.write(stats_payload);
         this.end();
