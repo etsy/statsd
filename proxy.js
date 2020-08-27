@@ -94,8 +94,8 @@ configlib.configFile(process.argv[2], function (conf, oldConfig) {
   var ring = new hashring(
     node_ring, 'md5', {
       'max cache size': config.cacheSize || 10000,
-      //We don't want duplicate keys sent so replicas set to 0
-      'replicas': 0
+      //We don't want duplicate keys sent so replicas set to 1
+      'replicas': 1
     });
 
   if (!servers_loaded) {
