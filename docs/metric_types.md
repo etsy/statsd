@@ -81,6 +81,8 @@ StatsD also supports gauges. A gauge will take on the arbitrary value assigned t
 
     gaugor:333|g
 
+At each flush, the current value of the gauge is sent. If a gauge is set multiple times within a `flushInterval`, only the most recent value will be sent.
+
 If the gauge is not updated at the next flush, it will send the previous value. You can opt to send
 no metric at all for this gauge, by setting `config.deleteGauges`
 
