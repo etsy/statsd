@@ -114,7 +114,7 @@ function flushMetrics() {
         delete(metrics.timers[timer_key]);
         delete(metrics.timer_counters[timer_key]);
       } else {
-        metrics.timers[timer_key] = [];
+        metrics.timers[timer_key] = [0];
         metrics.timer_counters[timer_key] = 0;
      }
     }
