@@ -22,6 +22,10 @@ exports.start = function(config, callback) {
              callback(packet, new rinfo(stream, packet));
           }
       });
+
+      stream.on('error', function (err) {
+          // don't kill the server due to connection errors from a client
+      });
   });
 
   server.on('listening', function() {
