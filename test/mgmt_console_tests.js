@@ -26,7 +26,7 @@ module.exports = {
   },
   
   stat_deletes: function(test) {
-    test.expect(6);
+    test.expect(8);
     
     var stream = {
         buffer : '',
@@ -59,6 +59,14 @@ module.exports = {
     
     test.deepEqual(stat_vertical, {'d':1});
     test.equal(stream.buffer, 'deleted: a.b\ndeleted: a.c\nEND\n\n');
+
+    //delete all
+    stat_vertical = {'a.b':1,'a.c':1,'d':1};
+    stream.clear();
+    mgmt.delete_stats(stat_vertical, ['*'], stream);
+
+    test.deepEqual(stat_vertical, {});
+    test.equal(stream.buffer, 'deleted: a.b\ndeleted: a.c\ndeleted: d\nEND\n\n');
     
     test.done();
   },

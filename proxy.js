@@ -37,6 +37,7 @@ configlib.configFile(process.argv[2], function (conf, oldConfig) {
 
   var healthStatus = configlib.healthStatus || 'up';
   var healthCheckInterval = config.checkInterval || 10000;
+  var resetStats = config.resetStats || false;
 
   var broadcastMsg = function(msg) {
     for (var i = 0; i < workers.length; i++) {
@@ -233,6 +234,9 @@ configlib.configFile(process.argv[2], function (conf, oldConfig) {
         new_server[node_id] = 100;
         log('Adding node ' + node_id + ' to the ring.', 'WARNING');
         ring.add(new_server);
+        if (resetStats) {
+          nodesResetStats();
+        }
       }
     }
 
@@ -248,7 +252,30 @@ configlib.configFile(process.argv[2], function (conf, oldConfig) {
     if (node_status[node_id] < 2) {
       log('Removing node ' + node_id + ' from the ring.', 'WARNING');
       ring.remove(node_id);
+      if (resetStats) {
+        nodesResetStats();
+      }
     }
+  }
+
+  function nodesResetStats() {
+    nodes.forEach(function(node, index, array) {
+      log('Resetting stats of node ' + node.host + ':' + node.port);
+      ['counters', 'timers', 'gauges'].forEach(function(stats_type, index, array) {
+        resetStats(node, stats_type);
+      })
+    });
+  }
+
+  // reset a node's stats
+  function resetStats(node, stats_type) {
+    var client = net.connect({port: node.adminport, host: node.host},
+        function() {
+            client.write('del' + stats_type + ' *\r\n')
+        }).on('error', (err) => {
+        // Handle errors here.
+         log(err.toString());
+      })
   }
 
   // Perform health check on node

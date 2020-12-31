@@ -15,6 +15,7 @@ Optional Variables:
   host:             address to listen on over UDP [default: 0.0.0.0]
   address_ipv6:     defines if the listen address is an IPv4 or IPv6 address [true or false, default: false]
   checkInterval:    health status check interval [default: 10000]
+  resetStats:       delete state of metrics on ring members change (add or remove) [default: false]
   cacheSize:        size of the cache to store for hashring key lookups [default: 10000]
   forkCount:        number of child processes (cluster module), number or 'auto' for utilize all cpus [default:0]
   server:           the server to load. The server must exist by name in the directory
@@ -37,6 +38,7 @@ port: 8125,
 udp_version:'udp4',
 mgmt_port: 8126,
 forkCount: 0,
+resetStats: false,
 checkInterval: 1000,
 cacheSize: 10000
 }
